@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>{{department['name']}}</title>
+	</head>
+	<body>
+		<h1>Department data</h1>
+		<p>Title: <b>{{ department['name'] }}</b><br>
+		<p>Address: <b>{{ department['location'] }}</b><br>
+		<p>E-Mail: <b>{{ department['email'] }}</b><br>
+		<p><b>Staff:</b><br>
+		{% if not employees %}
+		<h1>Data unavailable</h1>
+		{% else %}
+		<table>
+			<tr>
+			<td><b>First name</b></td>
+			<td><b>Last name</b></td>
+			</tr>
+			{% for emp in employees %}
+			<tr>
+				<td>{{ emp['firstname'] }}</td>
+				<td>{{ emp['lastname'] }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+		{% endif %}
+	</body>
+</html>
