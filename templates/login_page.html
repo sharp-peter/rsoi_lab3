@@ -10,11 +10,16 @@
 				<dd><input type="hidden" name=client_id value="{{client_id}}">
 				<dd><input type="hidden" name=state value="{{state}}">
 				<dt>Username:
-				<dd><input type=text pattern=".{3,}" required title="minimum 3 symbols" name=username>
+				<dd><input type=text pattern=".{3,}" required title="minimum 3 symbols" name=username value="{{username}}">
 				<dt>Password:
 				<dd><input type=password pattern=".{4,}" required title="minimum 4 symbols" name=password>
 			</dl>
 			<dd><input type=submit value=Authorize>
+			{% if error == 1 %}
+			<p>Incorrect username!<br>
+			{% elif error == 2 %}
+			<p>Incorrect password!<br>
+			{% endif %}
 		</form>
 	</body>
 </html>

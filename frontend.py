@@ -132,15 +132,20 @@ def login():
 	password = flask.request.form.get('password')
 	
 	try:
-		q = {'filters': [{'name': 'username', 'op': '==', 'val': username}, {'name': 'password', 'op': '==', 'val': password}], 'single': True}
+		q = {'filters': [{'name': 'username', 'op': '==', 'val': username}], 'single': True}
 		serv_response = requests.get(BE_USERS, params = {'q': json.dumps(q)})
 	except requests.exceptions.RequestException:
 		return error_page(503)
 	
 	if (serv_response.status_code != 200):
+		if (serv_response.status_code == 404):
+			return flask.render_template('login_page.html', error = 1)
 		return error_page(serv_response.status_code)
 	
 	resp_data = serv_response.json()
+	if (resp_data['password'] != password):
+		return flask.render_template('login_page.html', username = username, error = 2)
+	
 	flask.session.user_id = resp_data['id']
 	
 	return flask.redirect('/me')
@@ -223,13 +228,12 @@ def post_personnel():
 
 # Existing employee's data page
 # If department backend is down, occupation will be 'Unavailable'
-@app.route('/personnel/<int:item_id>', methods=['GET'])
+@app.route('/personnel/<int:item_id>', methods=['GET','POST'])
 def get_employee(item_id):
 	if (flask.session.user_id is None):
 		return flask.redirect('/login')
 	
-	if (flask.request.args.get('delete') == '1'):
-		print('yes')
+	if (flask.request.method == 'POST'):
 		return delete_personnel(item_id)
 	
 	try:
@@ -304,13 +308,12 @@ def post_department():
 
 # Existing department's data page
 # If personnel backend is down, employee list will be replaced with 'Data unavailable'
-@app.route('/departments/<int:class_id>', methods=['GET'])
+@app.route('/departments/<int:class_id>', methods=['GET','POST'])
 def get_department(class_id):
 	if (flask.session.user_id is None):
 		return flask.redirect('/login')
 	
-	if (flask.request.args.get('delete') == '1'):
-		print('yes')
+	if (flask.request.method == 'POST'):
 		return delete_department(class_id)
 	
 	try:
